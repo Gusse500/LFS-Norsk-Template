@@ -55,11 +55,9 @@ website/
 
 - Place the folder structure on your web server.
 - Update `img/logo.png` with your own logo.
-- Update `img/other files` with your own favicon and change `name` and 
-  `short_name` in site.webmanifest.
+- Update `img/other files` with your own favicon and change `name` and `short_name` in site.webmanifest.
 - Edit menu, colors, and content as needed.
 - Ensure PHP is enabled for contact form handling.
-- Uncomment <script src="js/exlinks.js"></script> for each page where you want 
-  to open external links in new tab.
+- Uncomment <script src="js/exlinks.js"></script> for each page where you want to open external links in new tab.
 
 ---

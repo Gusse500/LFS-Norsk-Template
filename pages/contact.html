@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Contact Us - Website Name</title>
+  <link rel="apple-touch-icon" sizes="180x180" href="../img//apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="../img/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="../img/favicon-16x16.png">
+  <link rel="icon" type="image/x-icon" href="../img/favicon.ico">
+  <link rel="manifest" href="../img/site.webmanifest">
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+  <div class="container">
+    <header class="header">
+      <div class="logo-container">
+        <img src="../img/logo.png" alt="Logo" class="logo">
+      </div>
+      <div class="site-title">Website Name</div>
+      <button class="hamburger" id="hamburger-btn" aria-label="Open menu">&#9776;</button>
+    </header>
+    <nav class="menu" id="side-menu">
+      <ul class="menu-list">
+        <li><a href="../index.html">Home</a></li>
+        <li><a href="#">Link 1</a></li>
+        <li><a href="#">Link 2</a></li>
+      </ul>
+      <hr>
+      <ul class="menu-list menu-list-secondary">
+        <li><a href="privacy.html">Privacy Statement</a></li>
+        <li><a href="cookies.html">Cookies</a></li>
+      </ul>
+    </nav>
+    <main class="main">
+      <h2>Contact Us</h2>
+      <form id="contact-form" action="../backend/contact.php" method="POST" style="max-width: 400px;">
+        <label for="name">Your Name:</label><br>
+        <input type="text" id="name" name="name" required><br><br>
+        <label for="email">Your Email:</label><br>
+        <input type="email" id="email" name="email" required><br><br>
+        <label for="message">Message:</label><br>
+        <textarea id="message" name="message" rows="6" required></textarea><br><br>
+        <button type="submit">Send Message</button>
+      </form>
+      <div id="contact-result" style="margin-top:20px;"></div>
+      <script>
+        // AJAX submit for the contact form
+        document.getElementById('contact-form').addEventListener('submit', function(e){
+          e.preventDefault();
+          var form = e.target;
+          var data = new FormData(form);
+          var xhr = new XMLHttpRequest();
+          xhr.open('POST', form.action, true);
+          xhr.onload = function () {
+            document.getElementById('contact-result').textContent = xhr.responseText;
+            if(xhr.status === 200) form.reset();
+          };
+          xhr.send(data);
+        });
+      </script>
+    </main>
+    <footer class="footer">
+      <span>&copy; 2025 Website Name. All rights reserved.</span>
+    </footer>
+    <div class="cookie-consent" id="cookie-consent">
+      <span>This site uses cookies to enhance your experience. 
+	  <a href="cookies.html">Learn more</a>.</span>
+      <button id="cookie-accept-btn">Accept</button>
+    </div>
+  </div>
+  <script src="../js/cookies.js"></script>
+  <script src="../js/main.js"></script>
+  <!--<script src="js/exlinks.js"></script>-->
+</body>
+</html>

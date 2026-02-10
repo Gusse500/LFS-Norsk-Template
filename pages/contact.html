@@ -8,6 +8,7 @@
   <meta http-equiv="X-Frame-Options" content="DENY">
   <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self';">
+  
   <link rel="apple-touch-icon" sizes="180x180" href="../img//apple-touch-icon.png">
   <link rel="icon" type="image/png" sizes="32x32" href="../img/favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="../img/favicon-16x16.png">
@@ -39,26 +40,69 @@
     <main class="main">
       <h2>Contact Us</h2>
       <form id="contact-form" action="../backend/contact.php" method="POST" style="max-width: 400px;">
+        <input type="hidden" id="csrf_token" name="csrf_token">
         <label for="name">Your Name:</label><br>
-        <input type="text" id="name" name="name" required><br><br>
+        <input type="text" id="name" name="name" maxlength="100" required><br><br>
         <label for="email">Your Email:</label><br>
-        <input type="email" id="email" name="email" required><br><br>
+        <input type="email" id="email" name="email" maxlength="254" required><br><br>
         <label for="message">Message:</label><br>
-        <textarea id="message" name="message" rows="6" required></textarea><br><br>
+        <textarea id="message" name="message" rows="6" maxlength="2000" required></textarea><br><br>
         <button type="submit">Send Message</button>
       </form>
       <div id="contact-result" style="margin-top:20px;"></div>
       <script>
+        // Function to fetch CSRF token from server
+        function fetchCSRFToken() {
+          return fetch('../backend/contact.php?action=get_token')
+            .then(response => {
+              if (!response.ok) {
+                throw new Error('Failed to get CSRF token');
+              }
+              return response.text();
+            })
+            .then(token => {
+              document.getElementById('csrf_token').value = token;
+              return token;
+            })
+            .catch(error => {
+              console.error('CSRF token error:', error);
+              document.getElementById('contact-result').textContent = 'Security error. Please refresh the page.';
+            });
+        }
+        
+        // Set CSRF token when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+          fetchCSRFToken();
+        });
+        
         // AJAX submit for the contact form
         document.getElementById('contact-form').addEventListener('submit', function(e){
           e.preventDefault();
+          
+          // Ensure we have a CSRF token
+          const csrfToken = document.getElementById('csrf_token').value;
+          if (!csrfToken) {
+            document.getElementById('contact-result').textContent = 'Security token missing. Please refresh the page.';
+            return;
+          }
+          
           var form = e.target;
           var data = new FormData(form);
           var xhr = new XMLHttpRequest();
           xhr.open('POST', form.action, true);
           xhr.onload = function () {
             document.getElementById('contact-result').textContent = xhr.responseText;
-            if(xhr.status === 200) form.reset();
+            if(xhr.status === 200) {
+              form.reset();
+              // Fetch new CSRF token after successful submission
+              fetchCSRFToken();
+            } else if(xhr.status === 403) {
+              // CSRF token invalid, fetch new one
+              fetchCSRFToken();
+            }
+          };
+          xhr.onerror = function() {
+            document.getElementById('contact-result').textContent = 'Network error. Please try again.';
           };
           xhr.send(data);
         });

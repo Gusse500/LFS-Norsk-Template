@@ -10,6 +10,19 @@ header("X-Content-Type-Options: nosniff");
 header("X-Frame-Options: DENY");
 header("Referrer-Policy: strict-origin-when-cross-origin");
 
+// Handle CSRF token generation request
+if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['action']) && $_GET['action'] === 'get_token') {
+    // Generate and store CSRF token
+    if (function_exists('random_bytes')) {
+        $token = bin2hex(random_bytes(32));
+    } else {
+        $token = bin2hex(openssl_random_pseudo_bytes(32));
+    }
+    $_SESSION['csrf_token'] = $token;
+    echo $token;
+    exit;
+}
+
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     http_response_code(405); // Method Not Allowed
     echo "Only POST requests are allowed.";
